@@ -59,6 +59,7 @@ export default function App() {
         <Search />
         <NumResult movies={movies} />
       </NavBar>
+
       <Main>
         <ListBox>
           <MovieList movies={movies} />
@@ -98,10 +99,10 @@ function Search() {
     />
   );
 }
-function Main({ childrem }) {
-  return <main className="main">{childrem}</main>;
+function Main({ children }) {
+  return <main className="main">{children}</main>;
 }
-function ListBox({ childrem }) {
+function ListBox({ children }) {
   const [isOpen1, setIsOpen1] = useState(true);
   return (
     <div className="box">
@@ -111,7 +112,7 @@ function ListBox({ childrem }) {
       >
         {isOpen1 ? "–" : "+"}
       </button>
-      {isOpen1 && childrem}
+      {isOpen1 && children}
     </div>
   );
 }
