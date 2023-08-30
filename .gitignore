@@ -5,6 +5,7 @@
 /.pnp
 .pnp.js
 App-v1.js
+StarRating.js
 # testing
 /coverage
 
