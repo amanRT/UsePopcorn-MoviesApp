@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useState } from "react";
 
 const tempMovieData = [
@@ -49,21 +50,50 @@ const tempWatchedData = [
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
-
+const KEY = "7ee71635";
+const tempQuery = "interstellar";
 export default function App() {
-  const [movies, setMovies] = useState(tempMovieData);
-  const [watched, setWatched] = useState(tempWatchedData);
+  const [movies, setMovies] = useState([]);
+  const [watched, setWatched] = useState([]);
+  const [isLoading, setLoading] = useState(false);
+  const [query, setQuery] = useState("");
+  const [error, setError] = useState("");
+  useEffect(function () {
+    async function fetchMovies() {
+      try {
+        setLoading(true);
+        const res = await fetch(
+          `http://www.omdbapi.com/?apikey=${KEY}&s=${tempQuery}`
+        );
+        if (!res.ok)
+          throw new Error("Something went wrong with fetching movies");
+
+        const data = await res.json();
+        if (data.Response === "False") throw new Error("Movie not Found");
+        setMovies(data.Search);
+      } catch (err) {
+        console.error(err.message);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchMovies();
+  }, []);
+
   return (
     <>
       <NavBar>
         <Logo />
-        <Search />
+        <Search query={query} setQuery={setQuery} />
         <NumResult movies={movies} />
       </NavBar>
 
       <Main>
         <Box>
-          <MovieList movies={movies} />
+          {/* {isLoading ? <Loader /> : <MovieList movies={movies} />} */}
+          {!isLoading && !error && <MovieList movies={movies} />}
+          {error && <ErrorMessage message={error} />}
         </Box>
 
         <Box>
@@ -72,6 +102,17 @@ export default function App() {
         </Box>
       </Main>
     </>
+  );
+}
+function Loader() {
+  return <p className="loader">Loading...</p>;
+}
+function ErrorMessage({ message }) {
+  return (
+    <p className="error">
+      <span>⛔</span>
+      {message}
+    </p>
   );
 }
 function NavBar({ children }) {
@@ -92,8 +133,7 @@ function Logo() {
     </div>
   );
 }
-function Search() {
-  const [query, setQuery] = useState("");
+function Search({ query, setQuery }) {
   return (
     <input
       className="search"
