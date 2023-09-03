@@ -68,9 +68,9 @@ export default function App() {
   function handleAddWatched(movie) {
     setWatched((watched) => [...watched, movie]);
   }
+
   function handelDeleteWatched(id) {
-    setWatched((watched) => watched.imdbID !== id);
-    console.log(id);
+    setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
 
   useEffect(
