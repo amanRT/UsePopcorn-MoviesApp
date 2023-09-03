@@ -70,7 +70,9 @@ export default function App() {
   }
   function handelDeleteWatched(id) {
     setWatched((watched) => watched.imdbID !== id);
+    console.log(id);
   }
+
   useEffect(
     function () {
       async function fetchMovies() {
@@ -191,7 +193,7 @@ function Box({ children }) {
   return (
     <div className="box">
       <button className="btn-toggle" onClick={() => setIsOpen((open) => !open)}>
-        {isOpen ? "–" : "+"}
+        {isOpen ? "-" : "+"}
       </button>
       {isOpen && children}
     </div>

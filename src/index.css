@@ -120,9 +120,10 @@ body {
 }
 
 .btn-toggle {
-  position: absolute;
+  position: sticky;
   top: 0.8rem;
   right: 0.8rem;
+  left: 40rem;
   height: 2.4rem;
   aspect-ratio: 1;
   border-radius: 50%;
