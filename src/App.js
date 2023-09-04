@@ -75,12 +75,14 @@ export default function App() {
 
   useEffect(
     function () {
+      const controller = new AbortController();
       async function fetchMovies() {
         try {
           setLoading(true);
           setError("");
           const res = await fetch(
-            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
+            { signal: controller.signal }
           );
           if (!res.ok)
             throw new Error("Something went wrong with fetching movies");
@@ -89,9 +91,12 @@ export default function App() {
           if (data.Response === "False") throw new Error("Movie not Found");
 
           setMovies(data.Search);
+          setError("");
         } catch (err) {
-          console.error(err.message);
-          setError(err.message);
+          if (err.name !== "AbortError") {
+            console.error(err.message);
+            setError(err.message);
+          }
         } finally {
           setLoading(false);
         }
@@ -102,6 +107,9 @@ export default function App() {
         return;
       }
       fetchMovies();
+      return function () {
+        controller.abort();
+      };
     },
     [query]
   );
@@ -291,6 +299,16 @@ function MovieDetails({ selectId, onCloseMovie, onAddWatched, watched }) {
       getMovie();
     },
     [selectId]
+  );
+  useEffect(
+    function () {
+      if (!title) return;
+      document.title = `MOVIR | ${title}`;
+      return function () {
+        document.title = `usePopcorn`;
+      };
+    },
+    [title]
   );
   return (
     <div className="details">
