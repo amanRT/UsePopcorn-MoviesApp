@@ -56,7 +56,7 @@ export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
   const [isLoading, setLoading] = useState(false);
-  const [query, setQuery] = useState("inception");
+  const [query, setQuery] = useState("");
   const [error, setError] = useState("");
   const [selectId, setSelectId] = useState(null);
   function handleSelectMovie(id) {
@@ -106,6 +106,7 @@ export default function App() {
         setError("");
         return;
       }
+      handleCloseMovie();
       fetchMovies();
       return function () {
         controller.abort();
@@ -287,6 +288,20 @@ function MovieDetails({ selectId, onCloseMovie, onAddWatched, watched }) {
   }
   useEffect(
     function () {
+      function callback(e) {
+        if (e.code === "Escape") {
+          onCloseMovie();
+        }
+      }
+      document.addEventListener("keydown", callback);
+      return function () {
+        document.removeEventListener("keydown", callback);
+      };
+    },
+    [onCloseMovie]
+  );
+  useEffect(
+    function () {
       async function getMovie() {
         setIsLoading(true);
         const res = await fetch(
@@ -321,7 +336,7 @@ function MovieDetails({ selectId, onCloseMovie, onAddWatched, watched }) {
               &larr;
             </button>
             <img src={poster} alt={`Poster of ${movie} movie`} />
-            <div class="details-overview">
+            <div className="details-overview">
               <h2>{title}</h2>
               <p>
                 {released} &bull; {runtime}
